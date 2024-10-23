@@ -1,48 +1,49 @@
-Code Review Summary
-1. Model Structure
-Original: The model combines everything into one layer.
+# Who is this document for?
 
-Revised: Introduced a medallion architecture, splitting the model into bronze and gold layers.
+This document is to instruct managers and administrators on how to swap a group of employees in one transaction.
 
-Explanation: This organization makes the pipeline clearer and more modular. Separate layers for raw data and transformations improve maintainability and scalability, making the workflow easier to debug and extend.
+## Example usage scenarios
 
-2. Maintainability
-Original: Utilized SELECT *, which poses risks if source tables change.
+- **Banking**: Tellers and personal bankers often change their seats to switch locations or hours more easily.
+- **Law Enforcement**: Workers bid on multiple assignments which are granted based on seniority or tenure.
+- **Rotations**: Workers that are in rotational programs need to move or rotate from position A to position B, position B to C, or position C to A.
+- **Mass Reorganizations**: Thousands of workers change positions, organizations, locations, and managers on an annual basis as a part of a larger reorganization which might happen periodically throughout the year.
 
-Revised: Selected only necessary columns to improve clarity and protect against future changes.
+**Prerequisites**: The audience has basic knowledge of the Workday interface and knows how to navigate it.
 
-Explanation: Using SELECT * introduces potential issues if the schema of source tables changes unexpectedly. By selecting explicit columns, the code becomes more intentional and maintainable, reducing the risk of breakages when changes occur.
+## Overview
 
-3. Performance
-Original: A cross join between date_spine and products could cause performance degradation.
+### Instruction for completing a Position Swap
 
-Revised: Replaced the cross join with a more efficient inner join. Also, added incremental logic for improved performance.
+Locate workers for position swaps, create a position swap list, and swap positions with the Swap Positions task.
 
-Explanation: Cross joins can create massive result sets, slowing down queries. Replacing it with an inner join reduces the dataset size and speeds up the query. Additionally, incremental logic ensures only new or changed data is processed, optimizing performance further.
+---
 
-4. Data Integrity
-Original: No data quality checks were implemented.
+### Locate workers for position swaps
+1. Use the **Find Workers** report to search and narrow down your worker population. You can use filters like:
+   - Location
+   - Job profile
+   - Supervisory organization
 
-Revised: Added data tests to validate relationships, enhancing data integrity. Incorporated utility and expectation packages.
+---
 
-Explanation: Data quality checks ensure consistency and reliability in the data pipeline. By adding tests and leveraging dbt’s utilities, potential issues like broken relationships or missing data can be caught early, preserving data integrity for accurate reporting.
+### Create a position swap list
+After finding workers, click on the **Add to Swap Positions List** button located at the bottom center of the screen. The button may be yellowish-orange, or it may be a custom color depending on your tenant settings.  
+Create a list of valid workers for a position swap in a new pop-up window: **Add to Swap Positions List task**.
 
-5. Best Practices
-Revised:
-Added a macro to encapsulate complex logic, promoting reuse.
-Implemented a pre-commit hook for code quality, ensuring models are described and pass linting before merging.
-Added a .github folder with a PR template for standardized contributions.
-Created a workflow for the pre-commit hook on GitHub for consistency.
-Added Spectacles tests for LookerML to automate testing of Looker models.
-Explanation: Macros improve code reuse and modularity, while pre-commit hooks and PR templates ensure code quality and consistency across submissions. Spectacles tests automate validation in Looker, further enhancing reliability.
-6. Looker Explorer File
-Original: No environment separation between production and development, and tables/columns lacked descriptions.
-Revised:
-Added environment separation to distinguish between production and development instances.
-Included clear descriptions for tables and columns in Looker files.
-Explanation: Environment separation ensures that changes are safely tested without impacting production data. Adding descriptions to the Looker views and explores enhances documentation, making the data more accessible and understandable for users.
+---
 
+### Swap positions with the Swap Positions task
+When you are ready to perform the swap:
+1. Use search to find and access **Swap Positions** with the Swap Positions task.
+2. In the Swap Positions task, enter:
+   - **Effective date** (date of swap)
+   - **Reason** (defined for your organization using the Maintain Event Categories and Reasons task)
+3. Check the **Use Swap Positions List** check box.
+4. In the swap positions list, choose your predefined list of workers to swap.  
+   If you don’t have any lists, enter an event title in the **Event Title Field** and identify individual workers one at a time.
+5. Define the proposed position for each worker.
+   - You can enter an optional comment near the proposed position column.
+6. Click on the **Submit** button to submit changes.
 
-
-
-
+Now you have completed this task on Workday!
